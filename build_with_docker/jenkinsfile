@@ -1,46 +1,59 @@
+// pipeline {
+//     agent {
+//         docker {
+//             image 'jenkins/inbound-agent:4.10-1'
+//             label 'my-docker-agent'
+//             args '-v /var/run/docker.sock:/var/run/docker.sock'
+//         }
+//     }
+
+//     stages {
+//         stage('Preparación') {
+//             steps {
+//                 script {
+//                     // Instalar Docker dentro del agente de DockerHub
+//                     sh 'curl -sSL https://get.docker.com/ | sh'
+//                     sh 'sudo usermod -aG docker jenkins'
+//                     sh 'sudo service docker restart'
+//                 }
+//             }
+//         }
+
+//         stage('Ejecución del contenedor') {
+//             steps {
+//                 script {
+//                     // Ejecutar el contenedor de Apache
+//                     sh 'docker run -d -p 80:81 --name apache-container httpd:latest'
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             // Limpiar recursos (eliminar contenedor)
+//             cleanDocker()
+//         }
+//     }
+// }
+
+// def cleanDocker() {
+//     script {
+//         // Detener y eliminar el contenedor
+//         sh 'docker stop apache-container'
+//         sh 'docker rm apache-container'
+//     }
+// }
+
 pipeline {
     agent {
-        docker {
-            image 'jenkins/inbound-agent:4.10-1'
-            label 'my-docker-agent'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
+        docker { image 'node:18.16.0-alpine' }
     }
-
     stages {
-        stage('Preparación') {
+        stage('Test') {
             steps {
-                script {
-                    // Instalar Docker dentro del agente de DockerHub
-                    sh 'curl -sSL https://get.docker.com/ | sh'
-                    sh 'sudo usermod -aG docker jenkins'
-                    sh 'sudo service docker restart'
-                }
+                sh 'node --version'
             }
         }
-
-        stage('Ejecución del contenedor') {
-            steps {
-                script {
-                    // Ejecutar el contenedor de Apache
-                    sh 'docker run -d -p 80:81 --name apache-container httpd:latest'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            // Limpiar recursos (eliminar contenedor)
-            cleanDocker()
-        }
-    }
-}
-
-def cleanDocker() {
-    script {
-        // Detener y eliminar el contenedor
-        sh 'docker stop apache-container'
-        sh 'docker rm apache-container'
     }
 }
