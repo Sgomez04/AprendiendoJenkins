@@ -46,18 +46,16 @@
 // }
 
 pipeline {
-    agent {
-        docker {
-            image 'docker:20.10.9'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     stages {
         stage('Preparación') {
             steps {
-                sh 'echo "Preparación del entorno..."'
-                // Puedes realizar acciones adicionales de preparación aquí si es necesario
+                script {
+                    sh 'echo "Preparación del entorno..."'
+                    sh 'docker -v'
+                    // Puedes realizar acciones adicionales de preparación aquí si es necesario
+                }
             }
         }
 
