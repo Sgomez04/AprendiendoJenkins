@@ -1,76 +1,29 @@
 pipeline {
     agent {
         docker {
-            image 'jenkins/inbound-agent:4.10-1'
-            label 'my-docker-agent'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
+            image 'httpd:latest'
+            ports '80:80'
         }
     }
 
     stages {
-        stage('Preparación') {
-            steps {
-                script {
-                    // Instalar Docker dentro del agente de DockerHub
-                    sh 'curl -sSL https://get.docker.com/ | sh'
-                    sh 'sudo usermod -aG docker jenkins'
-                    sh 'sudo service docker restart'
-                }
-            }
-        }
-
         stage('Ejecución del contenedor') {
             steps {
-                script {
-                    // Ejecutar el contenedor de Apache
-                    sh 'docker run -d -p 80:81 --name apache-container httpd:latest'
-                }
+                sh 'echo "Ejecutando el contenedor..."'
+                // Puedes agregar comandos adicionales para personalizar la ejecución del contenedor si es necesario
             }
         }
     }
 
     post {
         always {
-            // Limpiar recursos (eliminar contenedor)
             cleanDocker()
         }
     }
 }
 
 def cleanDocker() {
-    script {
-        // Detener y eliminar el contenedor
-        sh 'docker stop apache-container'
-        sh 'docker rm apache-container'
-    }
+    sh 'docker stop apache-container || true'
+    sh 'docker rm apache-container || true'
 }
-
-// pipeline {
-//     agent {
-//         docker {
-//             image 'httpd:latest'
-//             ports '80:80'
-//         }
-//     }
-
-//     stages {
-//         stage('Ejecución del contenedor') {
-//             steps {
-//                 sh 'echo "Ejecutando el contenedor..."'
-//                 // Puedes agregar comandos adicionales para personalizar la ejecución del contenedor si es necesario
-//             }
-//         }
-//     }
-
-//     post {
-//         always {
-//             cleanDocker()
-//         }
-//     }
-// }
-
-// def cleanDocker() {
-//     sh 'docker stop apache-container || true'
-//     sh 'docker rm apache-container || true'
-// }
 
