@@ -48,22 +48,32 @@
 pipeline {
     agent {
         docker {
-            image 'httpd:latest'
-            ports '80:80'
+            image 'docker:20.10.9'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
     stages {
+        stage('Preparación') {
+            steps {
+                sh 'echo "Preparación del entorno..."'
+                // Puedes realizar acciones adicionales de preparación aquí si es necesario
+            }
+        }
+
         stage('Ejecución del contenedor') {
             steps {
-                sh 'echo "Ejecutando el contenedor..."'
-                // Puedes agregar comandos adicionales para personalizar la ejecución del contenedor si es necesario
+                script {
+                    sh 'echo "Ejecutando el contenedor..."'
+                    sh 'docker run -d -p 8080:80 --name apache-container httpd:latest'
+                }
             }
         }
     }
 
     post {
         always {
+            // Limpia los recursos después de finalizar la ejecución
             cleanDocker()
         }
     }
@@ -73,4 +83,3 @@ def cleanDocker() {
     sh 'docker stop apache-container || true'
     sh 'docker rm apache-container || true'
 }
-
