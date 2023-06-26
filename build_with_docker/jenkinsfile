@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'httpd:latest'
-            ports '80:80'
+            ports '8080:80'
         }
     }
 
