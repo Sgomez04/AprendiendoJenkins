@@ -46,31 +46,42 @@
 // }
 
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.2'
-            args '-v $HOME/.m2:/root/.m2'
+    agent any
+
+    stages {
+        stage('Preparación') {
+            steps {
+                script {
+                    // Instalar Docker dentro del agente de Jenkins
+                    sh 'curl -sSL https://get.docker.com/ | sh'
+                    sh 'sudo usermod -aG docker jenkins'
+                    sh 'sudo service docker restart'
+                }
+            }
+        }
+
+        stage('Ejecución del contenedor') {
+            steps {
+                script {
+                    // Ejecutar el contenedor de Apache
+                    sh 'docker run -d -p 80:80 --name apache-container httpd:latest'
+                }
+            }
         }
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'mvn deploy'
-            }
+    post {
+        always {
+            // Limpiar recursos (eliminar contenedor)
+            cleanDocker()
         }
     }
 }
 
+def cleanDocker() {
+    script {
+        // Detener y eliminar el contenedor
+        sh 'docker stop apache-container'
+        sh 'docker rm apache-container'
+    }
+}
