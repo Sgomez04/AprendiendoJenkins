@@ -1,13 +1,14 @@
 pipeline {
-    agent {
-        docker {
-            image 'httpd:latest'
-            reuseNode true
-        }
-    }
+    agent any
 
     stages {
         stage('Ejecución del contenedor') {
+            agent {
+                docker {
+                    image 'httpd:latest'
+                    reuseNode true
+                }
+            }
             steps {
                 script {
                     sh 'echo "Ejecutando el contenedor..."'
