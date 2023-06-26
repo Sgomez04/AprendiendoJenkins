@@ -23,8 +23,3 @@ pipeline {
         }
     }
 }
-
-def cleanDocker() {
-    sh 'docker stop apache-container || true'
-    sh 'docker rm apache-container || true'
-}
