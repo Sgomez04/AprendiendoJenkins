@@ -1,21 +1,11 @@
-import groovy.json.JsonSlurperClassic
-
-def jsonParse(def json) {
-  new groovy.json.JsonSlurperClassic().parseText(json)
-}
 pipeline {
-    agent none
+    agent any
+
     stages {
-        stage('Example 1') {
-      agent any
-      options {
-        // Timeout counter starts BEFORE agent is allocated
-        timeout(time: 1, unit: 'SECONDS')
-      }
+        stage('Hola Mundo') {
       steps {
-        echo 'Hello World'
+        echo 'Hola Mundo'
       }
         }
     }
 }
-
